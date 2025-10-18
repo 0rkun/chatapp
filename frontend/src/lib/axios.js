@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const axiosObject = axios.create({
+export const axiosInstance = axios.create({
   baseURL:
     import.meta.env.MODE === "development"
       ? "http://localhost:3000/api"
