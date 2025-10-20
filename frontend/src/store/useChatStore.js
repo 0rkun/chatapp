@@ -35,6 +35,9 @@ export const useChatStore = create((set, get) => ({
     set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get("/messages/chats");
+      console.log("Backend'den gelen veri:", res.data); // ✅ Bunu ekleyin
+      console.log("Veri tipi:", Array.isArray(res.data)); // ✅ Array mi kontrol edin
+      console.log("Veri uzunluğu:", res.data?.length); // ✅ Uzunluğu kontrol edin
       set({ chats: res.data });
     } catch (error) {
       toast.error(error.response.data.message);

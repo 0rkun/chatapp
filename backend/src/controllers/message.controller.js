@@ -82,31 +82,74 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+// export const getChatPartners = async (req, res) => {
+//   try {
+//     const loggedInUserId = req.user._id;
+
+//     const messages = await Message.find({
+//       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
+//     });
+
+//     const chatPartnerIds = [
+//       ...new Set(
+//         messages.map((msg) =>
+//           msg.senderId.toString() === loggedInUserId.toString()
+//             ? msg.receiverId.toString()
+//             : msg.senderId.toString()
+//         )
+//       ),
+//     ];
+
+//     const chatPartners = await User.find({
+//       _id: { $in: chatPartnerIds },
+//     }).select("-password");
+
+//     res.status(200).json(chatPartners);
+//   } catch (error) {
+//     console.log("Error in getChatPartners controller", error);
+//     res.status(500).json({ message: "ınterval server" });
+//   }
+// };
+
 export const getChatPartners = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
+    console.log("1. Logged in user ID:", loggedInUserId); // ✅
 
     const messages = await Message.find({
       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
     });
 
-    const chatPartnerIds = [
-      ...new Set(
-        messages.map((msg) =>
-          msg.senderId.toString() === loggedInUserId.toString()
-            ? msg.receiverId.toString()
-            : msg.senderId.toString()
-        )
-      ),
-    ];
+    console.log("2. Messages found:", messages.length); // ✅
+    console.log("3. Messages:", JSON.stringify(messages, null, 2)); // ✅
+
+    const chatPartnerIds = new Set();
+
+    messages.forEach((msg) => {
+      console.log("4. Processing message:", msg._id); // ✅
+      console.log("   senderId:", msg.senderId); // ✅
+      console.log("   receiverId:", msg.receiverId); // ✅
+
+      if (msg.senderId.toString() !== loggedInUserId.toString()) {
+        chatPartnerIds.add(msg.senderId.toString());
+      }
+      if (msg.receiverId.toString() !== loggedInUserId.toString()) {
+        chatPartnerIds.add(msg.receiverId.toString());
+      }
+    });
+
+    console.log("5. Chat partner IDs:", Array.from(chatPartnerIds)); // ✅
 
     const chatPartners = await User.find({
-      _id: { $in: chatPartnerIds },
+      _id: { $in: Array.from(chatPartnerIds) },
     }).select("-password");
+
+    console.log("6. Chat partners found:", chatPartners.length); // ✅
+    console.log("7. Chat partners:", chatPartners); // ✅
 
     res.status(200).json(chatPartners);
   } catch (error) {
     console.log("Error in getChatPartners controller", error);
-    res.status(500).json({ message: "ınterval server" });
+    res.status(500).json({ message: "internal server error" });
   }
 };
