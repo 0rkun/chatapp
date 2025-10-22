@@ -92,6 +92,12 @@ export const useChatStore = create((set, get) => ({
 
     const socket = useAuthStore.getState().socket;
 
+    // Socket kontrolü ekle
+    if (!socket) {
+      console.log("Socket not connected yet");
+      return;
+    }
+
     socket.on("newMessage", (newMessage) => {
       const isMessageSentFromSelectedUser =
         newMessage.senderId === selectedUser._id;
@@ -114,6 +120,9 @@ export const useChatStore = create((set, get) => ({
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
+    // Socket kontrolü ekle
+    if (!socket) return;
+
     socket.off("newMessage");
   },
 }));
