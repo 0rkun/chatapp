@@ -7,8 +7,8 @@ import authRoutes from "./routes/auth.route.js";
 import messagesRoutes from "./routes/messages.route.js";
 import { connectDB } from "./lib/db.js";
 import { ENV } from "./lib/env.js";
+import { app, server } from "./lib/socket.js";
 
-const app = express();
 const __dirname = path.resolve();
 
 const PORT = ENV.PORT || 3000;
@@ -32,7 +32,7 @@ if (ENV.NODE_ENV === "production") {
   // });
 }
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
   connectDB();
 });
